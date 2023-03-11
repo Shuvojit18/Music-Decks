@@ -37,6 +37,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     playButton.addListener(this);
     stopButton.addListener(this);
     loadButton.addListener(this);
+    loopButton.addListener(this);
 
     playButton.setClickingTogglesState(false);
     stopButton.setClickingTogglesState(false);
@@ -179,6 +180,11 @@ void DeckGUI::buttonClicked(Button* button)
             switchOn(URL{ chooser.getResult() });
         });
     }
+
+       if (button == &loopButton) {
+           player->loopy = true;
+           player->loop();
+       }
     // if (button == &loadButton)
     // {
     //     FileChooser chooser{"Select a file..."};

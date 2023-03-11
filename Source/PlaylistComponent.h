@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "DeckGUI.h"
 #include "DJAudioPlayer.h"
+#include <fstream>
 //==============================================================================
 /*
 */
@@ -53,6 +54,8 @@ public:
     bool isInterestedInFileDrag(const StringArray& files) override;
     void filesDropped(const StringArray& files, int x, int y) override;
 
+    void writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset);
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaylistComponent);
 
@@ -66,6 +69,9 @@ private:
     //DJAudioPlayer* player;
     DeckGUI* gui;
  
+
+    //std::ofstream save;
+    //std::ifstream load;
     //TextButton* playbtn;
     //AudioFormatReader read;
 };

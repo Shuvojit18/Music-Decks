@@ -37,17 +37,18 @@ class DJAudioPlayer : public AudioSource {
     /** get the relative position of the playhead */
     double getPositionRelative();
 
+    bool loopy = false;
+
+
 private:
     AudioFormatManager& formatManager;
     std::unique_ptr<AudioFormatReaderSource> readerSource;
     AudioTransportSource transportSource; 
     ResamplingAudioSource resampleSource{&transportSource, false, 2};
 
-    //DeckGUI::playButton.
 
-   
+    //DeckGUI::playButton
 
-    bool loopy = false;
 };
 
 

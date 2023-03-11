@@ -35,6 +35,7 @@ PlaylistComponent::PlaylistComponent(AudioFormatManager& _formatManager, DeckGUI
 
 PlaylistComponent::~PlaylistComponent()
 {
+
 }
 
 void PlaylistComponent::paint (juce::Graphics& g)
@@ -200,3 +201,33 @@ void PlaylistComponent::filesDropped(const StringArray& files, int x, int y) {
 
     }
 };
+
+
+void PlaylistComponent::writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset) {
+    // Make a CSV file with one or more columns of integer values
+    // Each column of data is represented by the pair <column name, column data>
+    //   as std::pair<std::string, std::vector<int>>
+    // The dataset is represented as a vector of these columns
+    // Note that all columns should be the same size
+
+    // Create an output filestream object
+    std::ofstream myFile(filename);
+
+    // Send column names to the stream
+    for (int i = 0; i < dataset.size(); ++i)
+    {
+        myFile << dataset.at(i).first;
+        if (i != dataset.size() - 1) myFile << ","; // No comma at end of line
+    }
+    myFile << "\n";
+
+    // Send data to the stream
+    for (int i = 0; i < dataset.at(0).second.size(); ++i)
+    {
+        for (int j = 0; j < dataset.size(); ++j)
+        {
+            myFile << dataset.at(j).second.at(i);
+            if (j != dataset.size() - 1) myFile << ","; // No comma at end of line
+        }
+        myFile << "\n";
+    }

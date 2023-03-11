@@ -93,7 +93,7 @@ void DJAudioPlayer::start()
     else {
         
         transportSource.start();
-        transportSource.setLooping(true);
+        //transportSource.setLooping(true);
     }
   
 }
@@ -106,8 +106,9 @@ void DJAudioPlayer::stop()
 
 void DJAudioPlayer::loop()
 {
-    if (transportSource.isLooping()) transportSource.setLooping(false);
-    else transportSource.setLooping(true);
+    if(readerSource->isLooping()) readerSource->setLooping(false);
+    else readerSource->setLooping(true);
+        
 }
 
 double DJAudioPlayer::getPositionRelative()
