@@ -46,7 +46,7 @@ private:
     AudioTransportSource transportSource; 
     ResamplingAudioSource resampleSource{&transportSource, false, 2};
 
-
+    
     //DeckGUI::playButton
 
 };

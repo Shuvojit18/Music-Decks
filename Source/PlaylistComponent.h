@@ -54,22 +54,27 @@ public:
     bool isInterestedInFileDrag(const StringArray& files) override;
     void filesDropped(const StringArray& files, int x, int y) override;
 
-    void writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset);
+    //void writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset);
+    void writeCSV(std::string filename, std::vector<std::string> dataset);
 
+    void readCSV();
+
+    void loadPlaylist(File file);
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaylistComponent);
 
     AudioFormatManager& formatManager;
     TableListBox tableComponent;
 
-    std::vector<String> trackTitles;
-    std::vector<String> trackLength;
+    std::vector<std::string> trackTitles;
+    std::vector<std::string> trackLength;
+    std::vector<std::string> trackURLString;
     std::vector<URL> trackURL;
 
     //DJAudioPlayer* player;
     DeckGUI* gui;
- 
-
+    //URL url;
+    bool doOnce = true;
     //std::ofstream save;
     //std::ifstream load;
     //TextButton* playbtn;

@@ -51,6 +51,6 @@ private:
     MixerAudioSource mixerSource; 
     
     PlaylistComponent playlistComponent1{ formatManager,&deckGUI1 };
-    PlaylistComponent playlistComponent2{ formatManager,&deckGUI2 };
+    //PlaylistComponent playlistComponent2{ formatManager,&deckGUI2 };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

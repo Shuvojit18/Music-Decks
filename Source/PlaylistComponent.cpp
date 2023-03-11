@@ -35,7 +35,19 @@ PlaylistComponent::PlaylistComponent(AudioFormatManager& _formatManager, DeckGUI
 
 PlaylistComponent::~PlaylistComponent()
 {
+    try
+    {
 
+        //std::vector<std::pair<String, std::vector<String>>> vals = { {"Title", trackTitles}, {"Length", trackLength} };
+        //std::vector<String> data = 
+        // Write the vector to CSV
+        writeCSV("C:/Users/ACER/Desktop/new juce/JUCE/OtoDecks/Source/save.txt", trackURLString );
+    }
+    catch (const std::exception&)
+    {
+
+    }
+    
 }
 
 void PlaylistComponent::paint (juce::Graphics& g)
@@ -55,6 +67,20 @@ void PlaylistComponent::paint (juce::Graphics& g)
    
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
+
+
+    try
+    {
+        if (doOnce) {
+            readCSV();
+            doOnce = false;
+        };
+    }
+    catch (const std::exception&)
+    {
+
+    }
+
 }
 
 void PlaylistComponent::resized()
@@ -62,7 +88,7 @@ void PlaylistComponent::resized()
     // This method is where you should set the bounds of any child
     // components that your component contains..
     tableComponent.setBounds(25, 25, getWidth()-50, getHeight()/5);
-
+    
 }
 
 int PlaylistComponent::getNumRows()
@@ -111,16 +137,14 @@ void PlaylistComponent::paintCell(Graphics& g,
                 true);
             break;
     }
-
+    
 
     
 }
 
 void PlaylistComponent::cellClicked(int rowNumber, int columnId, const MouseEvent&) {
-    //std::cout << "cell clicked" << rowNumber << columnId <<std::endl;
-    DBG("cell clicked");
-    DBG(rowNumber);
-    DBG(columnId);
+    
+
 }
 
 Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
@@ -153,7 +177,9 @@ void PlaylistComponent::buttonClicked(Button* button)
     //DBG(trackURL[id]);
     //player->loadURL(trackURL[id]);
     gui->switchOn(trackURL[id]);
-    
+
+    //tableComponent.updateContent();
+    //repaint();
 
 }
 
@@ -162,48 +188,26 @@ void PlaylistComponent::buttonClicked(Button* button)
 bool PlaylistComponent::isInterestedInFileDrag(const StringArray& files) {
     return true;
 }
+
 void PlaylistComponent::filesDropped(const StringArray& files, int x, int y) {
-    String length;
+   // String length;
     
     if (files.size() < 10)
     {
         for (int i = 0; i < files.size(); ++i)
         {
             File file = files[i];
-            auto filename = file.getFileNameWithoutExtension();
-            ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
-            //DBG(file);
-            auto minutes = ((reader->lengthInSamples / reader->sampleRate) / 60);
-            auto seconds = (minutes - floor(minutes)) * 60;
-
-            String mins{ floor(minutes) };
-            String secs{ floor(seconds) };
-            length += mins;
-            length += ":";
-            length += secs;
-            
-            trackLength.push_back(length);
-            trackTitles.push_back(filename);
-            trackURL.push_back(URL{file});
-
-            tableComponent.updateContent();
-            repaint();
-            length.clear();
+            trackURLString.push_back(files[i].toStdString());
+            loadPlaylist(file);
 
         }
-        /*
-        for each (auto var in files)
-        {
-
-            trackURL.push_back(var);
-        }
-        */
-
+        
     }
 };
 
 
-void PlaylistComponent::writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset) {
+//void PlaylistComponent::writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset) {
+void PlaylistComponent::writeCSV(std::string filename, std::vector<std::string> dataset){
     // Make a CSV file with one or more columns of integer values
     // Each column of data is represented by the pair <column name, column data>
     //   as std::pair<std::string, std::vector<int>>
@@ -214,20 +218,78 @@ void PlaylistComponent::writeCsv(std::string filename, std::vector<std::pair<Str
     std::ofstream myFile(filename);
 
     // Send column names to the stream
-    for (int i = 0; i < dataset.size(); ++i)
-    {
-        myFile << dataset.at(i).first;
-        if (i != dataset.size() - 1) myFile << ","; // No comma at end of line
-    }
-    myFile << "\n";
+    //for (int i = 0; i < dataset.size(); ++i)
+    //{
+      //  myFile << dataset.at(i).first;
+        //if (i != dataset.size() - 1) myFile << ","; // No comma at end of line
+    //}
+    //myFile << "\n";
 
     // Send data to the stream
-    for (int i = 0; i < dataset.at(0).second.size(); ++i)
+    //for (int i = 0; i < dataset.at(0).second.size(); ++i)
+    //{
+    //    for (int j = 0; j < dataset.size(); ++j)
+    //    {
+    //        myFile << dataset.at(j).second.at(i);
+    //        if (j != dataset.size() - 1) myFile << ","; // No comma at end of line
+    //    }
+    //    myFile << "\n";
+
+    for (auto &content : dataset)
     {
-        for (int j = 0; j < dataset.size(); ++j)
-        {
-            myFile << dataset.at(j).second.at(i);
-            if (j != dataset.size() - 1) myFile << ","; // No comma at end of line
-        }
-        myFile << "\n";
+       myFile << content << std::endl;
     }
+
+    myFile.close();
+    
+};
+
+void PlaylistComponent::readCSV() {
+    std::ifstream file("C:/Users/ACER/Desktop/new juce/JUCE/OtoDecks/Source/save.txt");
+
+    //vector<string> v;
+    std::string str;
+    //const StringArray& str;
+    
+    // Read the next line from File until it reaches the
+    // end.
+    if (file.good()) {
+
+        while (std::getline(file, str)) {
+            File file = str;
+            loadPlaylist(file);
+
+    };
+            
+    file.close();
+    }
+};
+
+
+void PlaylistComponent::loadPlaylist(File file) {
+
+    auto filename = file.getFileNameWithoutExtension();
+
+    ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
+    //DBG(file);
+    String length;
+    auto minutes = ((reader->lengthInSamples / reader->sampleRate) / 60);
+    auto seconds = (minutes - floor(minutes)) * 60;
+
+    String mins{ floor(minutes) };
+    String secs{ floor(seconds) };
+    length += mins;
+    length += ":";
+    length += secs;
+
+    trackLength.push_back(length.toStdString());
+    trackTitles.push_back(filename.toStdString());
+    trackURL.push_back(URL{ file });
+
+    tableComponent.updateContent();
+    repaint();
+    length.clear();
+
+
+
+}
