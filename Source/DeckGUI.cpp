@@ -54,7 +54,6 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
 
     startTimer(500);
 
-    //stopButton.setColour(TextButton::ColourIds::textColourOffId, Colours::grey);
     volPad.registerSlider(&volSlider, XYPad::Axis::Y);
     speedPad.registerSlider(&speedSlider, XYPad::Axis::Y);
     posPad.registerSlider(&posSlider, XYPad::Axis::X);
@@ -65,6 +64,7 @@ DeckGUI::~DeckGUI()
     stopTimer();
 }
 
+//this function is called when a deck is switched on
 void DeckGUI::switchOn(URL url) {
     isOn = true;
 
@@ -90,15 +90,8 @@ void DeckGUI::switchOn(URL url) {
 
 void DeckGUI::paint (Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    //g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
-    //g.fillAll(Colours::darkviolet);
+    
+    //drawing decks depending on status 
     if (isOn) {
         g.setColour(Colours::blueviolet);
         repaint();
@@ -107,13 +100,12 @@ void DeckGUI::paint (Graphics& g)
     
 
     
-   // g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+  
     g.drawRoundedRectangle(getLocalBounds().toFloat(), 30.f, 3.f);
 
-    //g.setColour (Colours::azure);
+   
     g.setFont (14.0f);
-    //g.drawText ("DeckGUI", getLocalBounds(),
-    //            Justification::centred, true);   // draw some placeholder text
+    
     loadButton.setColour(TextButton::ColourIds::buttonColourId, Colours::blueviolet);
 
     playButton.setColour(TextButton::ColourIds::buttonOnColourId, Colours::blueviolet);
@@ -126,6 +118,7 @@ void DeckGUI::paint (Graphics& g)
     loopButton.setColour(TextButton::ColourIds::textColourOffId, Colours::grey);
 }
 
+//seting up their sizes 
 void DeckGUI::resized()
 {
     double rowH = getHeight()/8; 
@@ -153,6 +146,7 @@ void DeckGUI::resized()
 
 }
 
+//a function that checks which button is clicked 
 void DeckGUI::buttonClicked(Button* button)
 {
     if (button == &playButton)
@@ -172,32 +166,18 @@ void DeckGUI::buttonClicked(Button* button)
 
         fChooser.launchAsync(fileChooserFlags, [this](const FileChooser& chooser)
             {
-                //auto chooser = chooser.getResult();
-            //player->loadURL(URL{chooser.getResult()});
-            // and now the waveformDisplay as well
-            //waveformDisplay.loadURL(URL{chooser.getResult()}); 
-           
+                // passes the chooses file url to switchon function 
             switchOn(URL{ chooser.getResult() });
         });
     }
-
+       // checks if loop button is pressed then sends audio player signal to loop over
        if (button == &loopButton) {
-           player->loopy = true;
+           //player->loopy = true;
            player->loop();
        }
-    // if (button == &loadButton)
-    // {
-    //     FileChooser chooser{"Select a file..."};
-    //     if (chooser.browseForFileToOpen())
-    //     {
-    //         player->loadURL(URL{chooser.getResult()});
-    //         waveformDisplay.loadURL(URL{chooser.getResult()});
-            
-    //     }
-
-
-    // }
 }
+
+
 
 void DeckGUI::sliderValueChanged (Slider *slider)
 {
@@ -219,31 +199,30 @@ void DeckGUI::sliderValueChanged (Slider *slider)
     
 }
 
+
+//checks if its interested in taking in files
 bool DeckGUI::isInterestedInFileDrag (const StringArray &files)
 {
-  //std::cout << "DeckGUI::isInterestedInFileDrag" << std::endl;
   return true; 
 }
 
+//extracts file data and passes them to switchon function
 void DeckGUI::filesDropped (const StringArray &files, int x, int y)
 {
   std::cout << "DeckGUI::filesDropped" << std::endl;
   if (files.size() == 1)
   {
-    //player->loadURL(URL{File{files[0]}});
-    //waveformDisplay.loadURL(URL{ File{files[0]} });
     switchOn(URL{ File{files[0]} });
   }
 }
 
 void DeckGUI::timerCallback()
 {
-    //std::cout << "DeckGUI::timerCallback" << std::endl;
     waveformDisplay.setPositionRelative(
             player->getPositionRelative());
 }
 
-
+//mouse event function
 void DeckGUI::mouseDown(const MouseEvent& event) {
     dragger.startDraggingComponent(this, event);
 }

@@ -11,7 +11,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-//#include "DJAudioPlayer.h"
 //==============================================================================
 /*
 */
@@ -21,6 +20,7 @@ public:
     XYPad();
     ~XYPad() override;
 
+    //a  child class for the thumbpad we drag
     class Thumb : public Component {
     public:
         Thumb();
@@ -28,12 +28,13 @@ public:
         bool isOn = false;
 
         void paint(juce::Graphics&) override;
-
+        //mouse events handler
         void mouseDown(const MouseEvent& event) override;
         void mouseDrag(const MouseEvent& event) override;
-
+        //callback function from parent
         std::function<void(Point<double>)> moveCallback;
     private:
+        //dragger component so we can drag it
         ComponentDragger dragger;
         ComponentBoundsConstrainer constrainer;
     
@@ -41,15 +42,16 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
-
+    // setting a enum class for axis 
     enum class Axis {X, Y};
 
+    //registering the sliders to the pads
     void registerSlider(Slider* slider, Axis axis);
-    //void deregisterSlider(Slider* slider);
    
+    //mouse event handler
     void mouseDown(const MouseEvent& event) override;
     void mouseDrag(const MouseEvent& event) override;
-
+    //bool to check if it's on
     bool isOn = false;
 
 private:

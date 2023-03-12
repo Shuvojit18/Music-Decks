@@ -31,12 +31,6 @@ WaveformDisplay::~WaveformDisplay()
 
 void WaveformDisplay::paint (Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
 
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
     if (isOn) g.setColour (Colours::blueviolet);
@@ -57,7 +51,6 @@ void WaveformDisplay::paint (Graphics& g)
       );
       g.setColour(Colours::darkviolet);
       g.drawRect(position * getWidth(), 2.5, getWidth() / 30 - 5, getHeight() - 5);
-      //g.drawRoundedRectangle(getLocalBounds().toFloat(), 3.f, 1.f);
     }
     else 
     {
@@ -70,11 +63,10 @@ void WaveformDisplay::paint (Graphics& g)
 
 void WaveformDisplay::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
 
 }
 
+//load the file
 void WaveformDisplay::loadURL(URL audioURL)
 {
   audioThumb.clear();
@@ -85,6 +77,7 @@ void WaveformDisplay::loadURL(URL audioURL)
   }
 }
 
+//repaint when change received 
 void WaveformDisplay::changeListenerCallback (ChangeBroadcaster *source)
 {
     
@@ -92,6 +85,7 @@ void WaveformDisplay::changeListenerCallback (ChangeBroadcaster *source)
 
 }
 
+//pos
 void WaveformDisplay::setPositionRelative(double pos)
 {
   if (pos != position)
@@ -103,6 +97,7 @@ void WaveformDisplay::setPositionRelative(double pos)
   
 }
 
+//checks when mouse down and dragged
 void WaveformDisplay::mouseDown(const MouseEvent& event) {
     dragger.startDraggingComponent(this, event);
 }

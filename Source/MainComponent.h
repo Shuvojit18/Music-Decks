@@ -27,21 +27,27 @@ public:
     ~MainComponent();
 
     //==============================================================================
+    // setting up initial process
     void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;
+    //gets next audio blocks to play
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override;
+    //release resourcew after done playing 
     void releaseResources() override;
 
     //==============================================================================
+    //draws
     void paint (Graphics& g) override;
+    //fixes size
     void resized() override;
 
 private:
     //==============================================================================
     // Your private member variables go here...
-     
+    // registering basic audio format manager which we will pass down as ref to others 
     AudioFormatManager formatManager;
     AudioThumbnailCache thumbCache{100}; 
 
+    //here we declare 2 objects of audio player and deck gui, each for one.
     DJAudioPlayer player1{formatManager};
     DeckGUI deckGUI1{&player1, formatManager, thumbCache}; 
 
@@ -50,6 +56,7 @@ private:
 
     MixerAudioSource mixerSource; 
     
+    // music library
     PlaylistComponent playlistComponent1{ formatManager,&deckGUI1 };
     //PlaylistComponent playlistComponent2{ formatManager,&deckGUI2 };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

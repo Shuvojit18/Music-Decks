@@ -27,7 +27,7 @@ MainComponent::MainComponent()
         // Specify the number of input and output channels that we want to open
         setAudioChannels (0, 2);
     }  
-
+    // adding those component
     addAndMakeVisible(deckGUI1); 
     addAndMakeVisible(deckGUI2);  
 
@@ -81,6 +81,7 @@ void MainComponent::paint(Graphics& g)
 
 void MainComponent::resized()
 {
+    //setting up sizes 
     deckGUI1.setBounds(0, 0, getWidth() / 2, getHeight() / 4*3);
     deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight() / 4*3);
    

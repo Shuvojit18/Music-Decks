@@ -23,20 +23,23 @@ public:
     WaveformDisplay( AudioFormatManager & 	formatManagerToUse,
                     AudioThumbnailCache & 	cacheToUse );
     ~WaveformDisplay();
-
+    //juce function to setup compponents
     void paint (Graphics&) override;
     void resized() override;
-
+    //a lister for changes
     void changeListenerCallback (ChangeBroadcaster *source) override;
 
+    //loads up url
     void loadURL(URL audioURL);
 
     /** set the relative position of the playhead*/
     void setPositionRelative(double pos);
 
+    //mouse event listers
     void mouseDown(const MouseEvent& event) override;
     void mouseDrag(const MouseEvent & event) override;
      
+    //a bool to check if its on 
     bool isOn = false;
 
 

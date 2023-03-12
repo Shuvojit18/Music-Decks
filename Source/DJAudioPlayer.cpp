@@ -19,23 +19,28 @@ DJAudioPlayer::~DJAudioPlayer()
 {
 
 }
-
+//preparing transport and resample source
 void DJAudioPlayer::prepareToPlay (int samplesPerBlockExpected, double sampleRate) 
 {
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
     resampleSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
+
+//getting next audio block to play
 void DJAudioPlayer::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
     resampleSource.getNextAudioBlock(bufferToFill);
 
 }
+
+//releasing resources after playing
 void DJAudioPlayer::releaseResources()
 {
     transportSource.releaseResources();
     resampleSource.releaseResources();
 }
 
+//loading url 
 void DJAudioPlayer::loadURL(URL audioURL)
 {
     auto* reader = formatManager.createReaderFor(audioURL.createInputStream(false));
@@ -48,6 +53,7 @@ void DJAudioPlayer::loadURL(URL audioURL)
 
     }
 }
+//gain function
 void DJAudioPlayer::setGain(double gain)
 {
     if (gain < 0 || gain > 1.0)
@@ -59,6 +65,8 @@ void DJAudioPlayer::setGain(double gain)
     }
    
 }
+
+//speed controller func
 void DJAudioPlayer::setSpeed(double ratio)
 {
   if (ratio < 0 || ratio > 100.0)
@@ -69,6 +77,8 @@ void DJAudioPlayer::setSpeed(double ratio)
         resampleSource.setResamplingRatio(ratio);
     }
 }
+
+//pos function
 void DJAudioPlayer::setPosition(double posInSecs)
 {
     transportSource.setPosition(posInSecs);
@@ -97,6 +107,8 @@ void DJAudioPlayer::start()
     }
   
 }
+
+
 void DJAudioPlayer::stop()
 {
   transportSource.setPosition(0);

@@ -15,8 +15,7 @@
 PlaylistComponent::PlaylistComponent(AudioFormatManager& _formatManager, DeckGUI* _gui)
     : formatManager(_formatManager)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+    
     addAndMakeVisible(tableComponent);
     tableComponent.getHeader().addColumn("Track title", 1, 200);
     tableComponent.getHeader().addColumn("Length", 2, 75);
@@ -24,24 +23,16 @@ PlaylistComponent::PlaylistComponent(AudioFormatManager& _formatManager, DeckGUI
 
     tableComponent.setModel(this);
     gui = _gui;
-    //trackTitles.push_back("Track 1");
-    //trackTitles.push_back("Track 2");
-    //trackTitles.push_back("Track 3");
-    //trackTitles.push_back("Track 4");
-
     
 
 }
 
 PlaylistComponent::~PlaylistComponent()
 {
+    //trying to save the library 
     try
     {
-
-        //std::vector<std::pair<String, std::vector<String>>> vals = { {"Title", trackTitles}, {"Length", trackLength} };
-        //std::vector<String> data = 
-        // Write the vector to CSV
-        writeCSV("C:/Users/ACER/Desktop/new juce/JUCE/OtoDecks/Source/save.txt", trackURLString );
+        write("C:/Users/ACER/Desktop/new juce/JUCE/OtoDecks/Source/save.txt", trackURLString );
     }
     catch (const std::exception&)
     {
@@ -50,17 +41,10 @@ PlaylistComponent::~PlaylistComponent()
     
 }
 
+//paints the background 
 void PlaylistComponent::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    //g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
+    
     g.setColour (juce::Colours::darkviolet);
    
     g.drawRoundedRectangle(getLocalBounds().toFloat(), 30.f, 3.f);
@@ -71,8 +55,9 @@ void PlaylistComponent::paint (juce::Graphics& g)
 
     try
     {
+        //controls the flow of reading library, so it can read only once
         if (doOnce) {
-            readCSV();
+            read();
             doOnce = false;
         };
     }
@@ -120,6 +105,7 @@ void PlaylistComponent::paintCell(Graphics& g,
 {
     g.setColour(juce::Colours::white);
     g.setFont(15.0f);
+    //switch to display columns of data
     switch (columnId)
     {
         case 1:
@@ -142,10 +128,6 @@ void PlaylistComponent::paintCell(Graphics& g,
     
 }
 
-void PlaylistComponent::cellClicked(int rowNumber, int columnId, const MouseEvent&) {
-    
-
-}
 
 Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
                                                       int columnId,
@@ -156,15 +138,13 @@ Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     {
         if (existingComponentToUpdate == nullptr)
         {
+            //a new button called 'load', we use it load the music ti deck
             TextButton *btn = new TextButton("Load");
             btn->addListener(this);
             existingComponentToUpdate = btn;
             auto id{ rowNumber };
             btn->setComponentID(std::to_string(id));
-            //DBG(rowNumber);
-
-
-
+         
         }
     }
     return existingComponentToUpdate;
@@ -173,31 +153,26 @@ Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
 void PlaylistComponent::buttonClicked(Button* button)
 {
     int id = std::stoi(button->getComponentID().toStdString());
-    //DBG("PlaylistComponent::buttonClicked " << trackTitles[id]);
-    //DBG(trackURL[id]);
-    //player->loadURL(trackURL[id]);
+    //switching on the specific deck to play the file
     gui->switchOn(trackURL[id]);
-
-    //tableComponent.updateContent();
-    //repaint();
 
 }
 
 
-
+// drag n drop loader
 bool PlaylistComponent::isInterestedInFileDrag(const StringArray& files) {
     return true;
 }
 
 void PlaylistComponent::filesDropped(const StringArray& files, int x, int y) {
-   // String length;
-    
+   
     if (files.size() < 10)
     {
         for (int i = 0; i < files.size(); ++i)
         {
             File file = files[i];
             trackURLString.push_back(files[i].toStdString());
+            //loading up the playlist
             loadPlaylist(file);
 
         }
@@ -205,36 +180,9 @@ void PlaylistComponent::filesDropped(const StringArray& files, int x, int y) {
     }
 };
 
-
-//void PlaylistComponent::writeCsv(std::string filename, std::vector<std::pair<String, std::vector<String>>> dataset) {
-void PlaylistComponent::writeCSV(std::string filename, std::vector<std::string> dataset){
-    // Make a CSV file with one or more columns of integer values
-    // Each column of data is represented by the pair <column name, column data>
-    //   as std::pair<std::string, std::vector<int>>
-    // The dataset is represented as a vector of these columns
-    // Note that all columns should be the same size
-
-    // Create an output filestream object
+//saving the library
+void PlaylistComponent::write(std::string filename, std::vector<std::string> dataset){
     std::ofstream myFile(filename);
-
-    // Send column names to the stream
-    //for (int i = 0; i < dataset.size(); ++i)
-    //{
-      //  myFile << dataset.at(i).first;
-        //if (i != dataset.size() - 1) myFile << ","; // No comma at end of line
-    //}
-    //myFile << "\n";
-
-    // Send data to the stream
-    //for (int i = 0; i < dataset.at(0).second.size(); ++i)
-    //{
-    //    for (int j = 0; j < dataset.size(); ++j)
-    //    {
-    //        myFile << dataset.at(j).second.at(i);
-    //        if (j != dataset.size() - 1) myFile << ","; // No comma at end of line
-    //    }
-    //    myFile << "\n";
-
     for (auto &content : dataset)
     {
        myFile << content << std::endl;
@@ -244,19 +192,18 @@ void PlaylistComponent::writeCSV(std::string filename, std::vector<std::string> 
     
 };
 
-void PlaylistComponent::readCSV() {
+//reading the library from file
+void PlaylistComponent::read() {
     std::ifstream file("C:/Users/ACER/Desktop/new juce/JUCE/OtoDecks/Source/save.txt");
 
-    //vector<string> v;
-    std::string str;
-    //const StringArray& str;
     
-    // Read the next line from File until it reaches the
-    // end.
+    std::string str;
+    
     if (file.good()) {
 
         while (std::getline(file, str)) {
             File file = str;
+            //loading up the library
             loadPlaylist(file);
 
     };
@@ -265,13 +212,14 @@ void PlaylistComponent::readCSV() {
     }
 };
 
-
+//loads the library
 void PlaylistComponent::loadPlaylist(File file) {
 
     auto filename = file.getFileNameWithoutExtension();
 
     ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
-    //DBG(file);
+    
+    //sets the song length and stores in vector
     String length;
     auto minutes = ((reader->lengthInSamples / reader->sampleRate) / 60);
     auto seconds = (minutes - floor(minutes)) * 60;
@@ -289,7 +237,4 @@ void PlaylistComponent::loadPlaylist(File file) {
     tableComponent.updateContent();
     repaint();
     length.clear();
-
-
-
 }
